@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/contracts/test_case.schema.json",
+  "title": "Black-box test case",
+  "description": "The single source of truth for generated and human-validated test cases.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "user_story",
+    "objective",
+    "preconditions",
+    "test_data",
+    "steps",
+    "expected_result",
+    "type",
+    "design_technique",
+    "acceptance_criterion_covered"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^TC-[A-Z0-9-]+$",
+      "description": "Stable, human-readable test-case identifier."
+    },
+    "user_story": {
+      "type": "string",
+      "minLength": 1
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1
+    },
+    "preconditions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "test_data": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["string", "number", "integer", "boolean", "null"]
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["order", "action"],
+        "properties": {
+          "order": { "type": "integer", "minimum": 1 },
+          "action": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "expected_result": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "enum": ["positive", "negative"]
+    },
+    "design_technique": {
+      "type": "string",
+      "minLength": 1,
+      "description": "For example: equivalence partitioning, boundary value analysis, or decision table testing."
+    },
+    "acceptance_criterion_covered": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

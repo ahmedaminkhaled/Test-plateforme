@@ -1,0 +1,5 @@
+name: indico-ai-testing
+
+# Services are added incrementally in Phases 3–7.
+# Indico is intentionally excluded: it remains in its own official stack.
+services: {}

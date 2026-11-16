@@ -1,0 +1,36 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Node / Angular
+node_modules/
+frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+
+# Laravel / PHP
+backend/vendor/
+backend/.phpunit.result.cache
+backend/storage/*.key
+backend/storage/logs/*.log
+
+# Python
+ai-service/.venv/
+automation/.venv/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Test output
+automation/artifacts/
+automation/reports/
+automation/screenshots/
+*.log
+
+# Local IDE and OS files
+.DS_Store
+.idea/
+.vscode/
