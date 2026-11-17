@@ -136,8 +136,19 @@ export class TestCaseService {
   readonly cases = signal<TestCase[]>(this.initialCases);
   readonly selectedCaseId = signal<string>('TC-014');
   readonly searchQuery = signal<string>('');
-  readonly filterStatus = signal<string | null>('needs_review');
-  readonly filterStory = signal<string | null>('US-07');
+  readonly filterStatus = signal<string | null>(null);
+  readonly filterStory = signal<string | null>(null);
+
+  readonly totalCount = computed(() => this.cases().length);
+
+  readonly reviewedCount = computed(() => {
+    return this.cases().filter((c) => c.status !== 'needs_review').length;
+  });
+
+  readonly uniqueStoriesCount = computed(() => {
+    const stories = new Set(this.cases().map((c) => c.user_story));
+    return Math.max(stories.size, 1);
+  });
 
   readonly selectedCase = computed(() => {
     const list = this.cases();
@@ -152,7 +163,11 @@ export class TestCaseService {
 
     if (query) {
       list = list.filter(
-        (c) => c.id.toLowerCase().includes(query) || c.title.toLowerCase().includes(query)
+        (c) =>
+          c.id.toLowerCase().includes(query) ||
+          c.title.toLowerCase().includes(query) ||
+          c.objective.toLowerCase().includes(query) ||
+          c.design_technique.toLowerCase().includes(query)
       );
     }
     if (status) {
@@ -171,6 +186,12 @@ export class TestCaseService {
   updateStatus(id: string, newStatus: TestCase['status']): void {
     this.cases.update((items) =>
       items.map((item) => (item.id === id ? { ...item, status: newStatus } : item))
+    );
+  }
+
+  updateCaseDetails(id: string, updates: Partial<TestCase>): void {
+    this.cases.update((items) =>
+      items.map((item) => (item.id === id ? { ...item, ...updates, status: 'edited' } : item))
     );
   }
 
@@ -212,5 +233,20 @@ export class TestCaseService {
 
   clearStoryFilter(): void {
     this.filterStory.set(null);
+  }
+
+  setStatusFilter(status: string | null): void {
+    this.filterStatus.set(status);
+  }
+
+  setStoryFilter(story: string | null): void {
+    this.filterStory.set(story);
+  }
+
+  addGeneratedCases(newCases: TestCase[]): void {
+    this.cases.update((all) => [...all, ...newCases]);
+    if (newCases.length > 0) {
+      this.selectedCaseId.set(newCases[0].id);
+    }
   }
 }

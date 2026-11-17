@@ -16,6 +16,7 @@ export interface RunAnomaly {
   suite: SuiteName;
   badgeText: string;
   badgeType: AnomalySeverity;
+  browser?: string;
 }
 
 export interface RunSummary {

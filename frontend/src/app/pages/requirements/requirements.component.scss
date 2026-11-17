@@ -35,3 +35,71 @@
     cursor: pointer;
   }
 }
+
+.text-btn {
+  background: transparent;
+  border-color: transparent;
+  color: var(--color-primary);
+  padding: 2px 6px;
+  font-size: 13px;
+
+  &:hover {
+    background: #ECEFEA;
+  }
+}
+
+.ac-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+
+  .delete-btn {
+    border: none;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    opacity: 0.6;
+    transition: opacity 0.15s, color 0.15s;
+
+    &:hover {
+      opacity: 1;
+      color: var(--color-tag-bad-text);
+      background: var(--color-tag-bad-bg);
+    }
+  }
+}
+
+.add-criterion-box {
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background: #fafaf8;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 14px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+    }
+  }
+
+  textarea.inp {
+    resize: vertical;
+    font-family: inherit;
+  }
+}

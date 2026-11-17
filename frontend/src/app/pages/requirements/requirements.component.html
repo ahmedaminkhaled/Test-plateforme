@@ -1,9 +1,16 @@
 <div class="top">
   <div>
     <h1>Requirements</h1>
-    <p class="sub">6 user stories. US-07 has 3 criteria and no test cases yet.</p>
+    <p class="sub">
+      {{ stories.length }} user stories. {{ selectedStory.id }} has {{ selectedStory.acceptanceCriteria.length }} criteria and {{ selectedStory.testCaseCount }} test case{{ selectedStory.testCaseCount === 1 ? '' : 's' }}{{ selectedStory.testCaseCount === 0 ? ' yet' : '' }}.
+    </p>
   </div>
-  <span class="mut" style="font-size: 13px" role="status">Saved 10:42</span>
+  <div class="row">
+    @if (notificationMessage()) {
+      <span class="tag ok">{{ notificationMessage() }}</span>
+    }
+    <span class="mut" style="font-size: 13px" role="status">Saved {{ lastSaved }}</span>
+  </div>
 </div>
 
 <div class="req-grid">
@@ -33,29 +40,81 @@
   <!-- Column 2: Story Detail Sheet -->
   @if (selectedStory; as story) {
     <div class="sheet">
-      <h2>{{ story.title }}</h2>
+      @if (!isEditingStory()) {
+        <h2>{{ story.title }}</h2>
 
-      <h3>User story</h3>
-      <div>{{ story.storyText }}</div>
+        <h3>User story</h3>
+        <div>{{ story.storyText }}</div>
 
-      <h3>Acceptance criteria</h3>
-      <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px">
-        @for (ac of story.acceptanceCriteria; track ac) {
-          <li>{{ ac }}</li>
+        <div class="row" style="justify-content: space-between; align-items: baseline">
+          <h3>Acceptance criteria ({{ story.acceptanceCriteria.length }})</h3>
+          <button class="btn text-btn" (click)="startAddCriterion()">+ Add criterion</button>
+        </div>
+
+        <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px">
+          @for (ac of story.acceptanceCriteria; track $index) {
+            <li class="ac-item">
+              <span>{{ ac }}</span>
+              <button class="delete-btn" (click)="removeCriterion($index)" title="Remove criterion">✕</button>
+            </li>
+          }
+        </ol>
+
+        <!-- Inline add criterion input -->
+        @if (isAddingCriterion()) {
+          <div class="add-criterion-box">
+            <input
+              class="inp"
+              style="width: 100%"
+              placeholder="e.g. Validation error displays if input exceeds 300 characters"
+              [ngModel]="newCriterionText()"
+              (ngModelChange)="newCriterionText.set($event)"
+              (keydown.enter)="confirmAddCriterion()"
+            />
+            <div class="row" style="margin-top: 8px">
+              <button class="btn pri" (click)="confirmAddCriterion()">Add</button>
+              <button class="btn" (click)="cancelAddCriterion()">Cancel</button>
+            </div>
+          </div>
         }
-      </ol>
 
-      <h3>Business rules</h3>
-      <ul style="margin: 0; padding-left: 20px">
-        @for (br of story.businessRules; track br) {
-          <li>{{ br }}</li>
-        }
-      </ul>
+        <h3>Business rules</h3>
+        <ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px">
+          @for (br of story.businessRules; track br) {
+            <li>{{ br }}</li>
+          }
+        </ul>
 
-      <div class="row" style="margin-top: auto; padding-top: 24px">
-        <button class="btn" (click)="addCriterion()">Add criterion</button>
-        <button class="btn">Edit story</button>
-      </div>
+        <div class="row" style="margin-top: auto; padding-top: 24px">
+          <button class="btn" (click)="startAddCriterion()">Add criterion</button>
+          <button class="btn" (click)="startEditStory()">Edit story</button>
+        </div>
+      } @else {
+        <!-- Edit Story Form -->
+        <h2>Edit {{ story.id }}</h2>
+        <div class="edit-form">
+          <label>
+            <span>Story Title</span>
+            <input class="inp" [(ngModel)]="editModel.title" style="width: 100%" />
+          </label>
+
+          <label>
+            <span>User Story Text</span>
+            <textarea class="inp" rows="3" [(ngModel)]="editModel.storyText" style="width: 100%"></textarea>
+          </label>
+
+          <label>
+            <span>Business Rules (one per line)</span>
+            <textarea class="inp" rows="3" [(ngModel)]="editModel.businessRulesText" style="width: 100%"></textarea>
+          </label>
+        </div>
+
+        <div class="row" style="margin-top: auto; padding-top: 20px">
+          <button class="btn" (click)="cancelStoryEdit()">Cancel</button>
+          <div style="flex: 1"></div>
+          <button class="btn pri" (click)="saveStoryEdit()">Save Story</button>
+        </div>
+      }
     </div>
   }
 

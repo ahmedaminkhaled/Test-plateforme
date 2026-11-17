@@ -1,119 +1,224 @@
 <div class="top">
   <div>
     <h1>Test cases</h1>
-    <p class="sub">48 generated from 6 user stories. 31 reviewed so far.</p>
+    <p class="sub">
+      {{ totalCases }} generated from {{ totalStories }} user stories. {{ reviewedCount }} reviewed so far.
+    </p>
   </div>
-  <button class="btn pri">Generate cases</button>
+  <button class="btn pri" (click)="openGenerateDialog()">Generate cases</button>
 </div>
 
-<div class="row" style="margin-bottom: 16px">
+<!-- Filter and Search Bar -->
+<div class="row filter-bar" style="margin-bottom: 16px; position: relative">
   <input
     class="inp"
     aria-label="Search test cases"
-    placeholder="Search by title or ID"
-    style="width: 260px"
+    placeholder="Search by title, ID, or technique"
+    style="width: 280px"
     [(ngModel)]="searchQuery"
   />
-  <button class="btn">Filter</button>
+
+  <button class="btn" (click)="toggleFilterMenu()">
+    Filter ▾
+  </button>
 
   @if (filterStatus) {
-    <button class="tag in" (click)="clearStatus()" aria-label="Remove filter Needs review">
-      Needs review ✕
+    <button class="tag in" (click)="clearStatus()" [attr.aria-label]="'Remove status filter ' + statusLabel()">
+      {{ statusLabel() }} ✕
     </button>
   }
   @if (filterStory) {
-    <button class="tag in" (click)="clearStory()" aria-label="Remove filter Story US-07">
-      Abstracts ✕
+    <button class="tag in" (click)="clearStory()" [attr.aria-label]="'Remove story filter ' + storyLabel()">
+      {{ storyLabel() }} ✕
     </button>
+  }
+
+  @if (searchQuery || filterStatus || filterStory) {
+    <button class="btn text-btn" (click)="resetAllFilters()">Reset</button>
+  }
+
+  <!-- Filter Dropdown Menu -->
+  @if (showFilterMenu()) {
+    <div class="filter-dropdown">
+      <div class="filter-group">
+        <div class="filter-heading">Status</div>
+        <button class="filter-opt" [class.active]="filterStatus === null" (click)="setStatusFilter(null)">All statuses</button>
+        <button class="filter-opt" [class.active]="filterStatus === 'needs_review'" (click)="setStatusFilter('needs_review')">Needs review</button>
+        <button class="filter-opt" [class.active]="filterStatus === 'approved'" (click)="setStatusFilter('approved')">Approved</button>
+        <button class="filter-opt" [class.active]="filterStatus === 'edited'" (click)="setStatusFilter('edited')">Edited</button>
+        <button class="filter-opt" [class.active]="filterStatus === 'rejected'" (click)="setStatusFilter('rejected')">Rejected</button>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-heading">User Story</div>
+        <button class="filter-opt" [class.active]="filterStory === null" (click)="setStoryFilter(null)">All stories</button>
+        @for (s of availableStories(); track s.id) {
+          <button class="filter-opt" [class.active]="filterStory === s.id" (click)="setStoryFilter(s.id)">
+            {{ s.id }}: {{ s.title }}
+          </button>
+        }
+      </div>
+    </div>
   }
 </div>
 
+<!-- Main Split View -->
 <div class="content-grid">
   <!-- Left Master Table -->
   <div class="table-container">
-    <table class="tb" aria-label="Test cases list">
-      <thead>
-        <tr>
-          <th style="width: 80px">ID</th>
-          <th>Case</th>
-          <th style="width: 110px">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (tc of cases; track tc.id) {
-          <tr
-            class="clickable"
-            [class.sel]="tc.id === selectedCaseId"
-            (click)="select(tc.id)"
-          >
-            <td class="mono">{{ tc.id }}</td>
-            <td>
-              <div [class.font-bold]="tc.id === selectedCaseId">{{ tc.title }}</div>
-              <div class="mut" style="font-size: 13px">
-                {{ tc.type === 'positive' ? 'Positive' : 'Negative' }}
-              </div>
-            </td>
-            <td>
-              @if (tc.status === 'approved') {
-                <span class="tag ok">Approved</span>
-              } @else if (tc.status === 'needs_review') {
-                <span class="tag wn">Needs review</span>
-              } @else if (tc.status === 'edited') {
-                <span class="tag in">Edited</span>
-              } @else if (tc.status === 'rejected') {
-                <span class="tag bad">Rejected</span>
-              }
-            </td>
+    @if (cases.length > 0) {
+      <table class="tb" aria-label="Test cases list">
+        <thead>
+          <tr>
+            <th style="width: 80px">ID</th>
+            <th>Case</th>
+            <th style="width: 110px">Status</th>
           </tr>
-        }
-      </tbody>
-    </table>
-    <p class="mut" style="font-size: 13px; margin: 12px 8px" role="status">
-      1–{{ cases.length }} of 17 matching cases
-    </p>
+        </thead>
+        <tbody>
+          @for (tc of cases; track tc.id) {
+            <tr
+              class="clickable"
+              [class.sel]="tc.id === selectedCaseId"
+              (click)="select(tc.id)"
+            >
+              <td class="mono">{{ tc.id }}</td>
+              <td>
+                <div [class.font-bold]="tc.id === selectedCaseId">{{ tc.title }}</div>
+                <div class="mut" style="font-size: 13px">
+                  {{ tc.type === 'positive' ? 'Positive' : 'Negative' }}
+                </div>
+              </td>
+              <td>
+                @if (tc.status === 'approved') {
+                  <span class="tag ok">Approved</span>
+                } @else if (tc.status === 'needs_review') {
+                  <span class="tag wn">Needs review</span>
+                } @else if (tc.status === 'edited') {
+                  <span class="tag in">Edited</span>
+                } @else if (tc.status === 'rejected') {
+                  <span class="tag bad">Rejected</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <p class="mut" style="font-size: 13px; margin: 12px 8px" role="status">
+        Showing {{ cases.length }} of {{ totalCases }} test case{{ totalCases === 1 ? '' : 's' }}
+      </p>
+    } @else {
+      <div class="sheet empty-sheet">
+        <h3>No matching test cases</h3>
+        <p class="mut" style="margin-bottom: 16px">
+          Try clearing your search query or status/story filters.
+        </p>
+        <button class="btn pri" (click)="resetAllFilters()">Reset filters</button>
+      </div>
+    }
   </div>
 
   <!-- Right Detail Sheet -->
   @if (selectedCase; as tc) {
     <section class="sheet" [attr.aria-label]="'Case ' + tc.id">
-      <div class="row" style="margin-bottom: 8px">
-        <span class="mono">{{ tc.id }}</span>
-        <span class="tag">{{ tc.type === 'positive' ? 'Positive' : 'Negative' }}</span>
-        <span class="tag">{{ tc.design_technique }}</span>
-      </div>
+      @if (!isEditing()) {
+        <div class="row" style="margin-bottom: 8px">
+          <span class="mono">{{ tc.id }}</span>
+          <span class="tag">{{ tc.type === 'positive' ? 'Positive' : 'Negative' }}</span>
+          <span class="tag">{{ tc.design_technique }}</span>
+        </div>
 
-      <h2>{{ tc.title }}</h2>
-      <p class="mut" style="margin: 4px 0 0">
-        Covers criterion of
-        <a href="javascript:void(0)" style="color: var(--color-primary)">
-          {{ tc.user_story }}, {{ tc.user_story_title || 'user story' }}
-        </a>
-      </p>
+        <h2>{{ tc.title }}</h2>
+        <p class="mut" style="margin: 4px 0 0">
+          Covers criterion of
+          <a href="javascript:void(0)" style="color: var(--color-primary)">
+            {{ tc.user_story }}{{ tc.user_story_title ? ', ' + tc.user_story_title : '' }}
+          </a>
+        </p>
 
-      <h3>Objective</h3>
-      <div>{{ tc.objective }}</div>
+        <h3>Objective</h3>
+        <div>{{ tc.objective }}</div>
 
-      <h3>Preconditions</h3>
-      <div>{{ tc.preconditions.join('. ') }}</div>
+        <h3>Preconditions</h3>
+        <div>{{ tc.preconditions.join('. ') || 'None specified' }}</div>
 
-      <h3>Steps</h3>
-      <ol style="margin: 0; padding-left: 20px">
-        @for (step of tc.steps; track step.order) {
-          <li>{{ step.action }}</li>
-        }
-      </ol>
+        <h3>Steps</h3>
+        <ol style="margin: 0; padding-left: 20px">
+          @for (step of tc.steps; track step.order) {
+            <li>{{ step.action }}</li>
+          }
+        </ol>
 
-      <h3>Expected result</h3>
-      <div>{{ tc.expected_result }}</div>
+        <h3>Expected result</h3>
+        <div>{{ tc.expected_result }}</div>
 
-      <div class="row" style="margin-top: auto; padding-top: 20px">
-        <button class="btn" (click)="reject()">Reject</button>
-        <button class="btn" (click)="edit()">Edit</button>
-        <span class="mut" style="flex: 1; text-align: right; font-size: 13px">
-          A approves · R rejects · J and K move
-        </span>
-        <button class="btn pri" (click)="approve()">Approve case</button>
-      </div>
+        <div class="row" style="margin-top: auto; padding-top: 20px">
+          <button class="btn" (click)="reject()">Reject</button>
+          <button class="btn" (click)="startEdit()">Edit</button>
+          <span class="mut" style="flex: 1; text-align: right; font-size: 13px">
+            A approves · R rejects · J and K move
+          </span>
+          <button class="btn pri" (click)="approve()">Approve case</button>
+        </div>
+      } @else {
+        <!-- Inline Editor Form -->
+        <h2>Edit {{ tc.id }}</h2>
+        <div class="edit-form">
+          <label>
+            <span>Title</span>
+            <input class="inp" [(ngModel)]="editModel.title" style="width: 100%" />
+          </label>
+
+          <label>
+            <span>Objective</span>
+            <textarea class="inp" rows="2" [(ngModel)]="editModel.objective" style="width: 100%"></textarea>
+          </label>
+
+          <label>
+            <span>Preconditions (one per line)</span>
+            <textarea class="inp" rows="2" [(ngModel)]="editModel.preconditions" style="width: 100%"></textarea>
+          </label>
+
+          <label>
+            <span>Expected Result</span>
+            <textarea class="inp" rows="2" [(ngModel)]="editModel.expected_result" style="width: 100%"></textarea>
+          </label>
+        </div>
+
+        <div class="row" style="margin-top: auto; padding-top: 20px">
+          <button class="btn" (click)="cancelEdit()">Cancel</button>
+          <div style="flex: 1"></div>
+          <button class="btn pri" (click)="saveEdit()">Save Changes</button>
+        </div>
+      }
     </section>
   }
 </div>
+
+<!-- Generate Cases Modal Dialog -->
+@if (showGenerateDialog()) {
+  <div class="modal-backdrop" (click)="closeGenerateDialog()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h2>Generate Test Cases</h2>
+      <p class="mut" style="margin: 8px 0 16px">
+        Select a user story to synthesize ISTQB black-box test cases:
+      </p>
+
+      <div class="dialog-story-list">
+        @for (s of availableStories(); track s.id) {
+          <div class="dialog-story-item">
+            <div>
+              <b>{{ s.id }}: {{ s.title }}</b>
+              <div class="mut" style="font-size: 13px">{{ s.testCaseCount }} existing cases</div>
+            </div>
+            <button class="btn pri" (click)="generateForStory(s.id)">Generate</button>
+          </div>
+        }
+      </div>
+
+      <div class="row" style="justify-content: flex-end; margin-top: 20px">
+        <button class="btn" (click)="closeGenerateDialog()">Close</button>
+      </div>
+    </div>
+  </div>
+}
