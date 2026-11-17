@@ -1,0 +1,73 @@
+<div class="top">
+  <div>
+    <h1>Run {{ run.runId }}</h1>
+    <p class="sub">{{ run.timestamp }}</p>
+  </div>
+  <div class="row">
+    <button class="btn" (click)="runAgain()">Run again</button>
+    <button class="btn pri" (click)="exportReport()">Export report</button>
+  </div>
+</div>
+
+<p style="font-size: 32px; letter-spacing: -0.02em; line-height: 1.2; margin: 0; font-weight: 700">
+  {{ run.passedTests }} of {{ run.totalTests }} tests passed
+</p>
+<p class="sub" style="margin-bottom: 24px">
+  {{ run.failedTests }} failed and {{ run.skippedTests }} were skipped. Three of the failures happen only in Firefox.
+</p>
+
+<!-- Suites Progress Table -->
+<table class="tb" style="margin-bottom: 28px" aria-label="Suites results">
+  <thead>
+    <tr>
+      <th style="width: 25%">Suite</th>
+      <th style="width: 50%">Passed</th>
+      <th style="width: 25%">Result</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (suite of run.suites; track suite.name) {
+      <tr>
+        <td style="font-weight: 500">{{ suite.name }}</td>
+        <td>
+          <div class="progress-bar-bg">
+            <div
+              class="progress-bar-fill"
+              [style.width.%]="suite.percentage"
+            ></div>
+          </div>
+        </td>
+        <td>{{ suite.passed }} of {{ suite.total }}</td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+<h2 style="margin-bottom: 12px">Needs attention</h2>
+
+<!-- Anomalies Table -->
+<table class="tb" aria-label="Test anomalies">
+  <tbody>
+    @for (anomaly of run.anomalies; track anomaly.testId) {
+      <tr class="clickable">
+        <td class="mono" style="width: 80px">{{ anomaly.testId }}</td>
+        <td>
+          <b>{{ anomaly.testTitle }}</b>
+          <div class="mut" style="font-size: 13px">
+            {{ anomaly.description }}
+          </div>
+        </td>
+        <td style="width: 140px">{{ anomaly.suite }}</td>
+        <td style="width: 120px">
+          <span
+            class="tag"
+            [class.bad]="anomaly.badgeType === 'bad'"
+            [class.wn]="anomaly.badgeType === 'wn'"
+          >
+            {{ anomaly.badgeText }}
+          </span>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

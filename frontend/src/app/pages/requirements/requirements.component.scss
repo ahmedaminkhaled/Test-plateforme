@@ -1,0 +1,37 @@
+.req-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr 250px;
+  gap: 28px;
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 28px;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.technique-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.technique-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.check-row {
+  cursor: pointer;
+  user-select: none;
+  font-size: 14px;
+
+  input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+  }
+}

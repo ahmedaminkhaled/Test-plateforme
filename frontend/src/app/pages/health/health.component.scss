@@ -1,0 +1,19 @@
+.health-container {
+  max-width: 800px;
+}
+
+.status-indicator {
+  margin: 12px 0 20px;
+}
+
+.details-box {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+}

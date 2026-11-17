@@ -1,0 +1,22 @@
+<nav class="side" aria-label="Main">
+  <div class="proj">
+    <b>Testgen</b>
+    <span>Indico, local copy</span>
+  </div>
+
+  @for (item of navItems; track item.route) {
+    <a
+      [routerLink]="item.route"
+      routerLinkActive="on"
+      [attr.aria-current]="rla.isActive ? 'page' : null"
+      #rla="routerLinkActive"
+    >
+      {{ item.label }}<i>{{ item.count }}</i>
+    </a>
+  }
+
+  <div class="sp"></div>
+
+  <a routerLink="/knowledge-base" routerLinkActive="on">Knowledge base</a>
+  <a routerLink="/health" routerLinkActive="on">Settings & Health</a>
+</nav>

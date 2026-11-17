@@ -1,0 +1,233 @@
+/* Testgen Global Stylesheet - Interface Design Tokens */
+
+:root {
+  --font-sans: 'Instrument Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  --color-bg: #F6F7F5;
+  --color-surface: #ffffff;
+  --color-text-primary: #1B2430;
+  --color-text-secondary: #59636E;
+  --color-text-muted: #59636E;
+  --color-border: #E2E5E1;
+  --color-border-input: #CBD1CB;
+
+  --color-primary: #0F5C6E;
+  --color-primary-hover: #0B4958;
+  --color-primary-light: #E4F0F2;
+
+  --color-tag-ok-bg: #E3F1E9;
+  --color-tag-ok-text: #1E6B45;
+  --color-tag-bad-bg: #F8E7E3;
+  --color-tag-bad-text: #A33A2B;
+  --color-tag-warn-bg: #FBF0D9;
+  --color-tag-warn-text: #7A4F00;
+  --color-tag-info-bg: #E4F0F2;
+  --color-tag-info-text: #0F5C6E;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 {
+  font-size: 26px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 20px 0 4px;
+}
+
+.sub, .mut {
+  color: var(--color-text-secondary);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--color-text-secondary);
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+/* Buttons */
+.btn {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-input);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  &:hover {
+    background: #F0F2EE;
+  }
+
+  &.pri {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #ffffff;
+
+    &:hover {
+      background: var(--color-primary-hover);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* Inputs */
+.inp {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* Tags / Badges */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 12.5px;
+  font-weight: 600;
+  background: #ECEFEA;
+  color: #3A4450;
+  border: 0;
+  font-family: inherit;
+  white-space: nowrap;
+
+  &.ok {
+    background: var(--color-tag-ok-bg);
+    color: var(--color-tag-ok-text);
+  }
+
+  &.bad {
+    background: var(--color-tag-bad-bg);
+    color: var(--color-tag-bad-text);
+  }
+
+  &.wn {
+    background: var(--color-tag-warn-bg);
+    color: var(--color-tag-warn-text);
+  }
+
+  &.in {
+    background: var(--color-tag-info-bg);
+    color: var(--color-tag-info-text);
+    cursor: pointer;
+  }
+}
+
+/* Tables */
+.tb {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    padding: 6px 8px;
+  }
+
+  td {
+    padding: 10px 8px;
+    border-top: 1px solid var(--color-border);
+    vertical-align: top;
+    font-size: 14px;
+  }
+
+  tr.sel td {
+    background: var(--color-surface);
+  }
+
+  tr.clickable {
+    cursor: pointer;
+    transition: background 0.1s ease;
+
+    &:hover td {
+      background: #fafaf8;
+    }
+
+    &.sel td {
+      background: var(--color-surface);
+    }
+  }
+}
+
+/* Sheet Cards */
+.sheet {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(27, 36, 48, 0.05);
+}

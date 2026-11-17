@@ -1,0 +1,87 @@
+<div class="top">
+  <div>
+    <h1>Requirements</h1>
+    <p class="sub">6 user stories. US-07 has 3 criteria and no test cases yet.</p>
+  </div>
+  <span class="mut" style="font-size: 13px" role="status">Saved 10:42</span>
+</div>
+
+<div class="req-grid">
+  <!-- Column 1: Stories List -->
+  <div>
+    <table class="tb" aria-label="User stories">
+      <tbody>
+        @for (story of stories; track story.id) {
+          <tr
+            class="clickable"
+            [class.sel]="story.id === selectedStoryId"
+            (click)="select(story.id)"
+          >
+            <td class="mono" style="width: 60px">{{ story.id }}</td>
+            <td>
+              <div [class.font-bold]="story.id === selectedStoryId">{{ story.title }}</div>
+              <div class="mut" style="font-size: 13px">
+                {{ story.isGenerated ? story.testCaseCount + ' cases' : 'Not generated' }}
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Column 2: Story Detail Sheet -->
+  @if (selectedStory; as story) {
+    <div class="sheet">
+      <h2>{{ story.title }}</h2>
+
+      <h3>User story</h3>
+      <div>{{ story.storyText }}</div>
+
+      <h3>Acceptance criteria</h3>
+      <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px">
+        @for (ac of story.acceptanceCriteria; track ac) {
+          <li>{{ ac }}</li>
+        }
+      </ol>
+
+      <h3>Business rules</h3>
+      <ul style="margin: 0; padding-left: 20px">
+        @for (br of story.businessRules; track br) {
+          <li>{{ br }}</li>
+        }
+      </ul>
+
+      <div class="row" style="margin-top: auto; padding-top: 24px">
+        <button class="btn" (click)="addCriterion()">Add criterion</button>
+        <button class="btn">Edit story</button>
+      </div>
+    </div>
+  }
+
+  <!-- Column 3: Design Techniques selection -->
+  <div class="technique-panel">
+    <h2 style="font-size: 16px">Design techniques</h2>
+
+    <div class="technique-list">
+      @for (tech of techniques; track tech.id) {
+        <label class="row check-row">
+          <input
+            type="checkbox"
+            [checked]="tech.enabled"
+            (change)="toggleTechnique(tech.id)"
+          />
+          {{ tech.label }}
+        </label>
+      }
+    </div>
+
+    <p class="mut" style="font-size: 13px; margin: 0">
+      Each case names the technique that produced it.
+    </p>
+
+    <button class="btn pri" style="margin-top: auto; margin-bottom: 24px" (click)="onGenerate()">
+      Generate cases for {{ selectedStoryId }}
+    </button>
+  </div>
+</div>

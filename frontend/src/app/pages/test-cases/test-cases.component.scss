@@ -1,0 +1,17 @@
+.content-grid {
+  display: grid;
+  grid-template-columns: 440px 1fr;
+  gap: 32px;
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 28px;
+}
+
+.table-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.font-bold {
+  font-weight: 700;
+}

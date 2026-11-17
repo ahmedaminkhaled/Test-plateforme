@@ -1,0 +1,119 @@
+<div class="top">
+  <div>
+    <h1>Test cases</h1>
+    <p class="sub">48 generated from 6 user stories. 31 reviewed so far.</p>
+  </div>
+  <button class="btn pri">Generate cases</button>
+</div>
+
+<div class="row" style="margin-bottom: 16px">
+  <input
+    class="inp"
+    aria-label="Search test cases"
+    placeholder="Search by title or ID"
+    style="width: 260px"
+    [(ngModel)]="searchQuery"
+  />
+  <button class="btn">Filter</button>
+
+  @if (filterStatus) {
+    <button class="tag in" (click)="clearStatus()" aria-label="Remove filter Needs review">
+      Needs review ✕
+    </button>
+  }
+  @if (filterStory) {
+    <button class="tag in" (click)="clearStory()" aria-label="Remove filter Story US-07">
+      Abstracts ✕
+    </button>
+  }
+</div>
+
+<div class="content-grid">
+  <!-- Left Master Table -->
+  <div class="table-container">
+    <table class="tb" aria-label="Test cases list">
+      <thead>
+        <tr>
+          <th style="width: 80px">ID</th>
+          <th>Case</th>
+          <th style="width: 110px">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (tc of cases; track tc.id) {
+          <tr
+            class="clickable"
+            [class.sel]="tc.id === selectedCaseId"
+            (click)="select(tc.id)"
+          >
+            <td class="mono">{{ tc.id }}</td>
+            <td>
+              <div [class.font-bold]="tc.id === selectedCaseId">{{ tc.title }}</div>
+              <div class="mut" style="font-size: 13px">
+                {{ tc.type === 'positive' ? 'Positive' : 'Negative' }}
+              </div>
+            </td>
+            <td>
+              @if (tc.status === 'approved') {
+                <span class="tag ok">Approved</span>
+              } @else if (tc.status === 'needs_review') {
+                <span class="tag wn">Needs review</span>
+              } @else if (tc.status === 'edited') {
+                <span class="tag in">Edited</span>
+              } @else if (tc.status === 'rejected') {
+                <span class="tag bad">Rejected</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <p class="mut" style="font-size: 13px; margin: 12px 8px" role="status">
+      1–{{ cases.length }} of 17 matching cases
+    </p>
+  </div>
+
+  <!-- Right Detail Sheet -->
+  @if (selectedCase; as tc) {
+    <section class="sheet" [attr.aria-label]="'Case ' + tc.id">
+      <div class="row" style="margin-bottom: 8px">
+        <span class="mono">{{ tc.id }}</span>
+        <span class="tag">{{ tc.type === 'positive' ? 'Positive' : 'Negative' }}</span>
+        <span class="tag">{{ tc.design_technique }}</span>
+      </div>
+
+      <h2>{{ tc.title }}</h2>
+      <p class="mut" style="margin: 4px 0 0">
+        Covers criterion of
+        <a href="javascript:void(0)" style="color: var(--color-primary)">
+          {{ tc.user_story }}, {{ tc.user_story_title || 'user story' }}
+        </a>
+      </p>
+
+      <h3>Objective</h3>
+      <div>{{ tc.objective }}</div>
+
+      <h3>Preconditions</h3>
+      <div>{{ tc.preconditions.join('. ') }}</div>
+
+      <h3>Steps</h3>
+      <ol style="margin: 0; padding-left: 20px">
+        @for (step of tc.steps; track step.order) {
+          <li>{{ step.action }}</li>
+        }
+      </ol>
+
+      <h3>Expected result</h3>
+      <div>{{ tc.expected_result }}</div>
+
+      <div class="row" style="margin-top: auto; padding-top: 20px">
+        <button class="btn" (click)="reject()">Reject</button>
+        <button class="btn" (click)="edit()">Edit</button>
+        <span class="mut" style="flex: 1; text-align: right; font-size: 13px">
+          A approves · R rejects · J and K move
+        </span>
+        <button class="btn pri" (click)="approve()">Approve case</button>
+      </div>
+    </section>
+  }
+</div>
