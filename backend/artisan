@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+
+use Symfony\Component\Console\Input\ArgvInput;
+
+// Auto-load local pdo_pgsql extension if not globally present
+if (!extension_loaded('pdo_pgsql') && file_exists(__DIR__ . '/ext/usr/lib/php/20250925/pdo_pgsql.so') && !getenv('ARTISAN_REEXEC')) {
+    putenv('ARTISAN_REEXEC=1');
+    $extPath = __DIR__ . '/ext/usr/lib/php/20250925/pdo_pgsql.so';
+    $libPath = __DIR__ . '/ext/usr/lib/x86_64-linux-gnu';
+    putenv("LD_LIBRARY_PATH={$libPath}:" . (getenv('LD_LIBRARY_PATH') ?: ''));
+    putenv("PHP_INI_SCAN_DIR=/etc/php/8.5/cli/conf.d:" . __DIR__ . '/ext/conf.d');
+    $args = array_map('escapeshellarg', array_slice($argv, 1));
+    passthru(PHP_BINARY . " " . escapeshellarg(__FILE__) . " " . implode(' ', $args), $code);
+    exit($code);
+}
+
+define('LARAVEL_START', microtime(true));
+
+// Register the Composer autoloader...
+require __DIR__.'/vendor/autoload.php';
+
+// Bootstrap Laravel and handle the command...
+$status = (require_once __DIR__.'/bootstrap/app.php')
+    ->handleCommand(new ArgvInput);
+
+exit($status);

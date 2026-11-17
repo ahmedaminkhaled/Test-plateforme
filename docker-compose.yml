@@ -1,5 +1,25 @@
 name: indico-ai-testing
 
-# Services are added incrementally in Phases 3–7.
+# Services for Phase 3 (Database) and subsequent integration phases.
 # Indico is intentionally excluded: it remains in its own official stack.
-services: {}
+services:
+  db:
+    image: postgres:15-bookworm
+    container_name: testgen-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-testgen}
+      POSTGRES_USER: ${DB_USERNAME:-testgen}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-testgen} -d ${DB_DATABASE:-testgen}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
